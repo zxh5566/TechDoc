@@ -1,0 +1,33 @@
+【发送邮件】
+
+
+ ////// 配置 //////
+
+ >> config/mail.php
+
+ >> .env文件
+
+
+ ////// 发送 //////
+
+
+ >> 发送纯文本
+
+
+   Mail::raw('邮件内容',function($message){
+
+    $message->from('发件人邮箱地址','发件人名');
+    $message->subject('邮件主题');
+    $message->to('收件人邮箱地址');
+
+    })
+
+
+ >> 发送html
+
+
+    Mail::send('模板地址',['name'=>'发件人名称'],function($message){
+
+    $message->to('收件人邮箱地址');
+
+    })

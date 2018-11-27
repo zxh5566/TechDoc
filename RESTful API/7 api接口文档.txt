@@ -1,0 +1,11 @@
+【包含内容】
+
+ >> API接口地址
+
+ >> 请求方式 get put post delete
+
+ >> 入参格式
+
+ >> 出参格式
+
+ >> http code

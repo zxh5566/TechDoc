@@ -1,0 +1,13 @@
+熟悉mysql
+
+掌握mysql分区、分表
+
+掌握mysql集群等相关设计方案
+
+具备mysql优化经验；
+
+掌握php下各种nosql数据库api使用
+
+熟悉memcache、redis、mongodb等常用nosql解决方案
+
+了解各自的优缺点以及使用场景；

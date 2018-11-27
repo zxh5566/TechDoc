@@ -1,0 +1,10 @@
+¡¾É¾³ıÖØ¸´Êı¾İ¡¿
+
+delete a 
+from ttt a join 
+(select count(*) as num , s1,s2,min(id) as mid 
+from ttt 
+group by s1,s2 
+having num>1
+) b on a.s1=b.s1 and a.s2=b.s2 
+and a.id>b.mid;

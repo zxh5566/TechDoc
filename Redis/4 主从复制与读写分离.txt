@@ -1,0 +1,13 @@
+【主从复制配置】
+
+ //////// 命令实现 ////////
+
+ >> redis-6380 > slaveof 127.0.0.1 6379 ； 
+
+ >> 取消复制：redis-6380 > slaveof no one
+
+ //////// 配置实现 ////////
+
+ >> slaveof ip port 
+
+ >> slave-read-only yes

@@ -1,0 +1,105 @@
+【使用CURL发送请求的基本流程】
+
+
+ $ch = curl_init();  // 1. 初始化
+ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // 跳过证书检查
+ curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); 
+ curl_setopt($ch, CURLOPT_URL,"http://www.devdo.net"); // 指定请求的URL
+ curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+ curl_setopt($ch, CURLOPT_HEADER,0); // 不返回HTTP头部信息
+ $output = curl_exec($ch); // 3. 执行并获取HTML内容
+ if($output === FALSE ){
+ echo "CURL Error:".curl_error($ch);
+ }
+ curl_close($ch); // 4. 释放curl句柄
+
+
+ >> curl_exec() 执行CURL请求，成功返回对应URL返回的数据，以字符串表示；如果发生错误，返回 FALSE。需要注意的是，判断输出是否为FALSE用的是全等号，这是为了区分返回空串和出错的情况
+
+
+ >> CURLOPT_RETURNTRANSFER 设置为1表示稍后执行的curl_exec函数的返回是URL的返回字符串，而不是把返回字符串定向到标准输出并返回TRUE；
+
+
+
+【CURL发送GET请求】
+
+ >> 使用http_build_query 拼装好的带GET参数的URL传给curl_init函数，然后使用CURL发送HTTP请求
+
+
+function doCurlGetRequest($url,$data,$timeout = 5){
+ if($curl == "" || $timeout <= 0){
+ return false;
+ }
+ $url = $url.'?'.http_build_query($data);
+ $con = curl_init((string)$url);
+ curl_setopt($con, CURLOPT_HEADER, false);
+ curl_setopt($con, CURLOPT_RETURNTRANSFER,true);
+ curl_setopt($con, CURLOPT_TIMEOUT, (int)$timeout);
+ 
+ return curl_exec($con);
+}
+
+
+【CURL发送POST请求】
+
+ >> 使用CURL提供的选项CURLOPT_POSTFIELDS，设置该选项为POST字符串数据就可以把请求放在正文中
+
+ >> CURL_POST为true,标识这个请求是一个POST请求
+
+function doCurlPostRequest($url,$requestString,$timeout = 5){
+ if($url == '' || $requestString == '' || $timeout <=0){
+ return false;
+ }
+ $con = curl_init((string)$url);
+ curl_setopt($con, CURLOPT_HEADER, false);
+ curl_setopt($con, CURLOPT_POSTFIELDS, $requestString);
+ curl_setopt($con, CURLOPT_POST,true);
+ curl_setopt($con, CURLOPT_RETURNTRANSFER,true);
+ curl_setopt($con, CURLOPT_TIMEOUT,(int)$timeout);
+ return curl_exec($con); 
+}
+
+
+【CURL请求http get/post/put/delete】
+
+ public function curl($url,$data,$headers,$method)
+   {
+		
+	//$pem = $_SERVER['DOCUMENT_ROOT']."/Public/iot/ca/outgoing.CertwithKey.pem";
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        //curl_setopt($ch, CURLOPT_TIMEOUT, 500);
+        //curl_setopt($ch, CURLOPT_SSLCERT, $pem);
+        //curl_setopt($ch, CURLOPT_SSLKEYPASSWD,'IoM@1234');
+	//curl_setopt($ch, CURLOPT_HEADER, true);
+	
+	if($method=='GET'){
+		curl_setopt($curl, CURLOPT_HTTPGET, true);
+	}elseif($method=='PUT'){
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST,'PUT');
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+	}elseif($method=='POST'){
+        	curl_setopt($ch, CURLOPT_POST, 1);              //post提交方式 
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+	}elseif($method=='DELETE'){
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+	}
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+				
+        //curl_setopt($ch, CURLINFO_HEADER_OUT, TRUE);   // 开启后可以查看请求头
+        //curl_setopt($ch, CURLOPT_HTTPHEADER, array('app_key: QJKZk23_pXY0LZuyEf4fAr7YPPka','Authorization:'.$token, 'Content-Type: application/json'));
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        $res = curl_exec($ch);
+        $httpCode = curl_getinfo($ch,CURLINFO_HTTP_CODE); 
+        //$a = curl_getinfo($ch);
+        //p($a);     // 打印请求头 
+        //var_dump($res);
+        $result = array('code'=>$httpCode,'data'=>$res);
+        curl_close($ch);
+
+        return $result;
+   }

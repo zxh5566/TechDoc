@@ -1,0 +1,72 @@
+
+0 大访问量 高并发的解决方案 
+
+1 mysql如何分库分表 
+
+
+2 php设计模式–很重要–说出你知道的设计模式及使用场景和优势 
+
+
+3 数据库千万级别的数据操作和表设计 
+
+
+4 对索引的理解 
+
+5 memcache的理解和底层 缓存几乎是必考的，如memchache和redis的区别及实际应用场景 
+
+6 redis的使用场景 
+
+7 队列和堆栈的理解及实际应用场景 
+
+8 php多进程 
+
+
+9 对字符串和数组的操作，必考，没有跳过这两种问题的 
+
+10 int=intval(int)和int=int+0的区别 
+
+intval是强制将变量转换成整型。而+对变量的操作只能是进行相加的运算操作，所以，如果int是整型的话可以正常运算，如果是非数值型，结果为0
+
+11 arr1= array(1,2,3,4,5); arr2=array(6,7,8,9,10,11); vardump(arr1+arr2);的结果是什么
+
+12 arr1 = array(1,2,3,4,5); foreach(arr1 as &item){echo item;}item = 3; 
+foreach(arr1 as item){echo $item;} 
+这两次会输出什么
+
+13 php对大文件的操作和linux对大文件的操作—-考中的几率非常大，尤其是前者 
+
+14 写一个函数，能够遍历文件夹中所有文件和子文件 这个几乎是必考的 
+
+15 表tab_log的结构，id,uid,tm;如何实现查询某天中有三条记录以上的uid 
+select uid，count(*) as num from tab_log group by tm having num > 3 
+
+16 error_reporting(“E_ALL”)和ini_set(“display_errors”, “on”)的区别? 
+后者的权限大于前者，后者是OFF的话，前者就算是E-ALL也没用。 
+
+17 echo print print_r的区别 
+
+echo和print都可输出，echo不是函数，没有返回值，如果只是输出，echo会更快
+
+而print是一个函数，有返回值，print是打印字符串
+
+print_r通常用于打印变量相关的信息，一般在调试的时候用。
+
+prin_r打印复合类型，数组或者对象
+
+
+18 正则表达式的（50%的考中机会，有些面试官会比较看重，因为这是基础，就像操作字符串一样） 
+
+19 什么是面向对象，考中几率50%。直说封装 继承 多态直接淘汰 
+
+20 apache和nginx的区别，为什么现在大都选用nginx 
+
+21 mysql 优化方法，问的非常笼统，考你平时对mysql的运用水平和设计深度，考中几率10000%，只是看考的深浅 
+
+22 linux使用情况，不想对缓存和mysql这么深，至少计划任务、简单的shell脚本和基本命令肯定要 
+
+23 session问题（比如session共享、session和cookie的关系等，这是必考的，几乎是100%） 
+
+
+
+
+ 

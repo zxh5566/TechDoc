@@ -1,0 +1,84 @@
+【视图】
+
+
+ >> 位置：resources > views   info.blade.php
+
+ >> 输出：return view('member/info',['name'=>'zxh5566']);
+
+
+
+【模板继承】
+
+ >> layouts.blade.php  放入公共部分
+
+ >> @section('header') 头部 @show
+
+ >> @section('header') @parent header @stop
+
+ >> @section('sidebar') 侧栏 @show
+
+ >> @yield('content','主要内容区域')
+
+ >> @section('content') @stop
+
+ >> @section('footer') 尾部 @show
+
+ >> @extends('layouts')
+
+
+【输出变量】
+
+ >> {{$name}}    @{{$name}} 原样输出
+
+【调用php代码】
+
+ >> {{time()}}
+
+【模板注释】
+
+ >> {{-- 注释 --}}
+
+【引入子视图include】
+
+ >> @include('student.common')
+
+【流程控制】
+
+ >> @if ($name=='zxh')
+
+    zxh
+
+    @elseif($name=='zxh5566')
+
+    zxh5566
+
+    @else
+
+    who am i
+
+    @endif
+
+ >> @foreach(students as $student)
+
+    {{$student->name}}
+
+    @endforeach
+
+ >> @forelse(students as $student)
+
+    {{$student->name}}
+
+    @empty
+
+    null   
+
+    @endforelse
+
+
+【模板中的URL】
+
+ >> {{ url('url') }}
+
+ >> {{ action('StudentController@urlTest') }}
+
+ >> {{ route('url') }}

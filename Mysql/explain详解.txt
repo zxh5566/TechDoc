@@ -1,0 +1,74 @@
+【explain分析】
+
+ ////// id //////
+
+ >> 代表select 语句的编号, 如果是连接查询,表之间是平等关系, select 编号都是1,从1开始. 如果某    select中有子查询,则编号递增
+
+
+ ////// select_type: 查询类型 //////
+
+ >> simple 不含子查询
+
+ >> primary 含子查询或派生查询
+
+ >> subquery 非from子查询
+
+ >> derived from子查询
+
+ >> union
+
+ >> union result
+
+
+ ////// table: 查询针对的表 //////
+
+ >> 实际的表: 如select * from t1
+
+ >> 表的别名: 如 select * from t2 as tmp;
+
+ >> derived :如from型子查询时
+
+ >> null :直接计算得结果,不用走表 
+
+
+ ////// type: 查询的方式 //////
+
+ >> all:全表扫描
+
+ >> index
+
+ >> range: 查询时,能根据索引做范围的扫描
+
+ >> ref: 通过索引列,可以直接引用到某些数据行
+
+ >> eq_ref: 通过索引列,直接引用某1行数据
+
+ >> const, system, null: 这3个分别指查询优化到常量级别, 甚至不需要查找时间
+
+
+ ////// possible_key: 可能用到的索引 //////
+
+ >> 注意: 系统估计可能用的几个索引,但最终,只能用1个.
+
+
+ ////// key : 最终用的索引 //////
+
+
+ ////// key_len: 使用的索引的最大长度 //////
+
+
+ ////// ref: 指连接查询时, 表之间的字段引用关系 //////
+
+
+ ////// rows : 是指估计要扫描多少行 //////
+
+
+ ////// extra //////
+
+ >> index: 是指用到了索引覆盖,效率非常高
+
+ >> using where 是指光靠索引定位不了,还得where判断一下 
+
+ >> using temporary 是指用上了临时表, group by 与order by 不同列时,或group by ,order by 别的    表的列.
+
+ >> using filesort : 文件排序(文件可能在磁盘,也可能在内存),

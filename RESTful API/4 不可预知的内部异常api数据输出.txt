@@ -1,0 +1,59 @@
+【ApiException】
+
+
+ use think\Exception;
+ class ApiException extends Exception
+ {
+      
+    public $message = '';
+    public $httpCode = 500;
+    public $code = 0;
+
+    public function __construct($message='',$httpCode=0,$code=0)
+      {
+          $this->message = $message;
+          $this->httpCode = $httpCode;
+          $this->code = $code;
+       }
+
+
+  }
+
+
+
+【处理不可预知内部异常的api数据输出】
+
+ >> 修改配置文件   
+
+ // 异常处理handle类 留空使用 \think\exception\Handle
+
+    'exception_handle'=> '\app\common\lib\exception\ApiHandleException',
+
+
+namespace app\common\lib\exception;
+use think\exception\Handle;
+
+class ApiHandleException extends Handle 
+
+{
+   public $httpCode = 500;
+   public function rend(\Exception $e){
+
+     if(config('app_debug')==true){
+ 
+         parent:: rend(); // 如果是调试模式，使用默认的异常显示格式
+
+     }
+
+     if($e instanceof ApiException){
+
+         $this->httpCode = $e->httpCode;  // 如果异常是ApiException抛出的
+
+     }
+     
+     return  show(0, $e->getMessage(), array(), $this->httpCode);
+
+   }
+
+
+}

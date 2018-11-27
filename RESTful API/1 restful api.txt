@@ -1,0 +1,40 @@
+【restful api简介】
+
+
+ >> 面向资源
+
+ >> http动词(get post put delete)来描述操作
+
+ >> api数据格式一般为json
+
+ >> 获取用户信息 get /api/user/1
+
+ >> 更新用户信息 put /api/user/1
+
+ >> 新增用户信息 post /api/user
+
+ >> 删除用户信息 delete /api/user/1
+
+
+【http状态码】
+
+
+ >> 200 请求成功     201 创建成功         202  更新成功
+
+ >> 400 无效请求     401 需要身份验证     403  禁止访问
+
+ >> 404 请求资源不存在                    500 内部错误
+
+
+【API数据结构格式】
+
+
+ >> status     业务状态码
+
+ >> message    提示信息
+
+ >> data       数据层
+
+ >> httpCode   http状态码
+
+

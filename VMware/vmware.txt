@@ -1,0 +1,10 @@
+【VM虚拟机下centos7 联网】
+
+在虚拟机为nat的网络连接下（就是默认的那个）
+
+
+可以设置 
+
+文件 /etc/sysconfig/network-scripts/ifcfg-enp0s3（这里的enp0s3不是固定的，看你具体情况，但是基本是en开头的）
+
+将 ONBOOT=no 改为 ONBOOT=yes

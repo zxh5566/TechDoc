@@ -1,0 +1,43 @@
+
+【查看是否开启慢查询日志】
+
+show variables like %slow_query_log%;
+
+【查看慢查询日志位置】
+
+show variables like 'slow%';
+
+【启用mysql慢查询日志】
+
+set global slow_query_log_file = /sql_log/slow_log.log;慢查询日志记录的位置
+
+set global log_queries_not_using_indexes = on; 未使用索引的SQL记录日志
+
+set global long_query_time = 0.001; 抓取执行超过多少时间的SQL
+
+set global slow_query_log = on;启动慢查询日志
+
+
+【慢查询日志记录的内容】
+
+Time:何时执行的查询
+
+
+// 执行SQL的主机信息 //
+
+User@Host: 执行查询的用户和客户端ip
+
+//SQL执行信息//
+
+Query_time:查询sql执行的时间 ; Lock_time:执行查询记录锁定时间   Rows_sent:查询返回的行数  Rows_examined: 查询扫描的行数
+
+// SQL执行时间 //
+
+SET timestamp = 1402389328;
+
+// 查询的SQL内容 //
+
+
+【如何分析慢查询日志】
+
+mysqldumpslow slow_mysql.log

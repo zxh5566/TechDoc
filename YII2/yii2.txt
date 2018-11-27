@@ -1,0 +1,25 @@
+【Gii创建后台模块】
+
+打开开发模式：defined('YII_ENV') or define('YII_ENV', 'dev');
+
+配置config/web.php ：
+
+$config['modules']['gii'] = [
+        'class' => 'yii\gii\Module',
+        'allowedIPs' => ['127.0.0.1'],
+    ];
+
+$config['modules']['admin'] = [
+'class'=>'app\modules\admin
+'];
+
+
+访问Gii： /index.php?r=gii
+
+Modules Class:app\modules\admin
+
+Modules ID:admin
+
+【配置默认控制器】
+
+config/web.php   添加  'defaultRoute' => 'index'

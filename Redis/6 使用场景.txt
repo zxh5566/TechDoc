@@ -1,0 +1,132 @@
+【合理使用Redis】
+
+ >> 设置超时时间
+
+ >> 不存放大文件
+
+ >> 不存放不常用数据，存放热数据
+
+ >> 合理使用不同类型的数据结构
+
+ >> 谨慎使用正则处理或者批量操作Hash Set等
+
+
+【常见应用场景】
+
+ >> 缓存、计数器、队列、最新列表、排行榜、分布式锁、位操作
+
+
+【BitMap】
+
+ ////// 统计某天的用户登陆数量 //////
+
+ >> 首先以当天的日志加固定的前缀作为key，建立一个bitmap。例如：userlogin:2016-01-15,每一位二进制的位做为一个用户ID的标识（offset）。当用户访问时，就把bitmap中标识此用户的二进制（value）从0置为1。
+
+
+$key = "userlogin:2016-01-15";
+$redis->setBit($key,$uid,1);
+$redis->bitCount($key); //计算今天活跃用户数
+
+$key2 = "userlogin:2016-01-14";
+$redis->bitOp('AND','both_active',$key,$key2);
+$both_nums = $redis->bitCount('both_active'); //统计最近两天都登录的用户数
+
+$key3 = "userlogin:2016-01-13";
+$redis->bitOp('OR','three_active',$key,$key2,$key3);
+$three_nums = $redis->bitCount('three_active'); //统计最近三天活跃用户数
+
+
+
+【HyperLogLog】
+
+ ////// 统计访问 IP 数 //////
+
+ redis> PFADD  ip:20160929  "1.1.1.1"  "2.2.2.2"  "3.3.3.3"
+(integer) 1
+redis> PFCOUNT  ip:20160929
+(integer) 3
+redis> PFADD  ip:20160928  "1.1.1.1"  "4.4.4.4"  "5.5.5.5"
+(integer) 1
+redis> PFCOUNT  ip:20160928  ip:20160929
+(integer) 5
+
+
+
+【限制1小时内每用户Id登录次数】
+ 
+ >> 判断list:uid的长度
+
+ >> 长度小于限制登录的次数，将登录时间lpush进链表uid
+
+ >> 长度等于限制登录的次数,判断当前时间和第一次登录时间的间隔(链表元素index[4])是否小于1小时
+
+ >> 如果小于1小时则不允许登录
+
+ >> 如果大于1小时，则删除原先的链表，然后重新建立链表，将当前登录时间lpush进链表(即初始化链表)
+
+function limitReg($uid=0,$limitNums=5){
+
+	$redis = new redis();
+	$redis->connect('127.0.0.1',6379);
+	$regtime = time();
+        $list = 'list:'.$uid;
+	$len = $redis->llen($list);
+	if($len<$limitNums){
+		$redis->lpush($list,$regtime);
+	}else{
+		$lastTime = $redis->lindex($list,4);
+		if($regtime - $lastTime<=3600){
+			return -1;
+		}else{
+			$redis->del($list);
+			$redis->lpush($list,$regtime);
+		}
+	}
+
+}
+
+【List队列实现秒杀】
+
+ >> ms_status_商品id   1秒杀结束，0秒杀开启 string
+
+ >> ms_商品id  秒杀队列   list
+
+
+public function miaosha(){ //秒杀逻辑实现
+
+$uid = input('post.uid'); //接收用户id
+$sid = input('post.sid'); //接收商品id
+$cache_ms_status = 'ms_status_'.$sid; //秒杀状态
+$cache_ms_uids = 'ms_'.$sid; //秒杀队列
+if(Redis::get($cache_ms_status)==1){ //检查当前秒杀状态
+return array(
+'code'=>0,
+'msg'=>'秒杀已结束'
+)
+}
+$number = Redis::llen($cache_ms_uids); //获取当前秒杀队列人数
+if($number>=$limit_number){ //如果秒杀人数已经达到上限
+Redis::set($cache_ms_status,1);
+return array(
+'code'=>0,
+'msg'=>'秒杀已结束'
+)
+}
+
+Redis::lpush($cache_ms_uids ,$uid);//正常秒杀，当用户放入队列
+return array(
+'code'=>1,
+'msg'=>'秒杀成功'
+)
+}
+
+public function saveMiaosha($sid=0){ //取出秒杀uid
+
+$cache_ms_status = 'ms_status_'.$sid; //秒杀状态
+$cache_ms_uids = 'ms_'.$sid; //秒杀队列
+Redis::set($cache_ms_status,1); //设置秒杀状态为结束
+for($i=0,$i<Redis::llen($cache_ms_uids);$i++){
+$uid = Redis::rpop($cache_ms_uids); //循环取出该商品秒杀队列的uid
+}
+
+}

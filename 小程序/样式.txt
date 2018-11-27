@@ -1,0 +1,8 @@
+.container{
+display:flex;           //弹性盒模型
+flex-direction:colunm; //垂直排列
+align-items:center;    //居中
+
+}
+
+flex-direction:row   水平排列

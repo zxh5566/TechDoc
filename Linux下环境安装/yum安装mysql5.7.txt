@@ -1,0 +1,94 @@
+
+ >> 配置YUM源
+
+  # 下载mysql源安装包
+
+   wget http://dev.mysql.com/get/mysql57-community-release-el7-8.noarch.rpm
+
+  # 安装mysql源
+
+   yum localinstall mysql57-community-release-el7-8.noarch.rpm
+
+
+ >> 安装MySQL
+
+   yum install mysql-community-server
+
+
+ >> 启动MySQL服务
+
+   systemctl start mysqld
+
+
+ >> 开机启动
+
+  systemctl enable mysqld
+
+  systemctl daemon-reload
+
+
+ >> 修改root本地登录密码
+
+   mysql安装完成之后，在/var/log/mysqld.log文件中给root生成了一个默认密码。通过下面的方式找到root默认密码，然后登录mysql进行修改：
+
+   grep 'temporary password' /var/log/mysqld.log
+
+   修改密码 使用默认密码进入MySQL后，使用如下命令修改密码。by后面的引号中即为密码
+
+   alter user 'root'@'localhost' identified by '123@Abc!'; 
+
+
+ >> 重新设置mysql登录密码
+
+  在配置文件找到mysqld 末尾加上 skip-grant-tables 跳过密码检测
+
+  mysql -uroot -p 直接回车进入mysql
+
+ update mysql.user set authentication_string=PASSWORD('111111') where user='root';
+
+  刷新权限  flush privileges;
+
+  重启mysql /bin/systemctl restart  mysqld.service
+
+  >> 设置远程连接权限
+
+  设置之前 请去掉 skip-grant-tables 配置后重启.然后使用mysql -u root -p  
+  输入密码后进入 
+
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '123@Abc!' WITH GRANT OPTION;
+
+flush privileges;
+
+按照文档我们 修改密码 
+
+ALTER USER USER() IDENTIFIED BY ‘111111';
+
+  >> 修改密码策略   
+
+  添加my.cnf文件中添加如下配置禁用即可  validate_password = off
+
+  systemctl restart mysqld
+
+
+ >> 配置防火墙
+
+  如果不行记得要打开端口 
+
+  firewall-cmd --zone=public --add-port=3306/tcp --permanent
+
+ （--permanent永久生效，没有此参数重启后失效）
+
+  重新载入
+
+  firewall-cmd --reload
+
+ 
+
+
+ 
+
+ 
+
+ 
+
+

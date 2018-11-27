@@ -1,0 +1,103 @@
+﻿// 工作原理 //
+
+对用户而言，分区表是一个独立的逻辑表，但是底层mysql将其分成了多个物理子表，这对用户来说是透明的，每一个分区表都会使用一个独立的表文件。
+
+
+// 适用场景 //
+
+1 表很大，无法全部存在内存，或者只在表最后有热点数据，其他都是历史数据
+
+2、分区表数据容易维护，可以对独立的分区进行独立的操作
+
+
+
+// 使用分区表注意事项 //
+
+结合业务场景选择分区键，避免跨分区查询
+
+对分区表进行查询最好在where从句中包含分区键
+
+具有主键或唯一索引的表，主键或唯一索引必须是分区键的一部分
+
+
+
+// 执行后查看数据分区分布 //
+
+
+SELECT PARTITION_NAME,TABLE_ROWS FROM INFORMATION_SCHEMA.PARTITIONS WHERE TABLE_SCHEMA='test' AND TABLE_NAME = 'user_sys';
+
+
+// 对已有表进行分区(range模式) //
+
+ ALTER TABLE 表名 PARTITION by range(字段名) 
+(PARTITION 分区名  VALUES LESS THAN (字段值),
+);
+
+例如：
+alter table user_sys partition by range(id)(
+partition p1 values less than(4),
+partition p2 values less than(7),
+partition p3 values less than maxvalue);
+
+
+// 增加分区 //
+
+alter table 表名 add partition (partition 分区名 values less than(字段值));
+
+// 合并 //
+
+alter table 表名
+reorganize partition 分区名1,分区名2 into
+(partition 分区名 values less than (xx));
+
+例如：
+alter table user_sys reorganize partition p1,p2 into
+(partition p1 values less than (7));
+
+
+// 删除分区 //
+
+alter table 表名drop partition 分区名;(丢数据)
+
+移除分区 (不丢数据)
+Alter table news_main remove partitioning;
+
+
+强制使用某分区查询
+select * from news_main PARTITION(p1)   
+
+
+// list 分区 //
+
+按分区键取值得列表进行分区；
+
+同范围分区一样，各分区的列表值不能重复；
+
+每一行数据必须能找到对应的分区列表，否则数据插入失败；
+
+
+partition by list(字段名)
+(
+partition p1 values in  (字段值1,字段值2),
+partition p2 values in  (字段值3,字段值4),
+partition p3 values in  (字段值5,字段值6)
+);
+常用在把不同分类的商品 分区分出去
+
+
+// 分区数据归档迁移条件 //
+
+1 mysql>=5.7
+
+2 结构相同
+
+3、归档到的数据表一定要是非分区表
+
+4、非临时表，不能有外键约束
+
+5、归档引擎要是 archive ，归档引擎只能查询
+
+
+alter table 分区表名 exchange partition 分区名 with table 归档表名;
+
+

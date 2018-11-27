@@ -1,0 +1,169 @@
+
+/////// 逻辑备份和物理备份 ///////
+
+逻辑备份的结果为SQL语句，适合于所有存储引擎，mysqldump为逻辑备份
+
+
+物理备份对数据库目录的拷贝，对于内存表只备份结构。Xtrabackup
+
+
+
+/////// 全量备份和增量备份 ///////
+
+全量备份对整个数据库的一个完整备份
+
+增量备份是在上次全量或增量备份基础上，对于更改数据进行的备份
+
+mysqldump 不支持增量备份
+
+
+
+/////// mysqldump 对数据库备份 ///////
+
+
+【常用语法】
+
+
+mysqldump [options] database [tables];
+
+mysqldump [options] --databases [options] db1 [db2..]
+
+mysqldump [options] --all-databases [options]
+
+
+【mysqldump 常用参数】
+
+-u ,--user=name //指定连接的用户名
+
+-p,--password[=name] //连接数据库密码
+
+--host, -h  // 需要导出的主机信息
+
+--all-databases  , -A   // 导出全部数据库。
+
+--single-transaction 
+
+//该选项在导出数据之前提交一个BEGIN SQL语句，BEGIN 不会阻塞任何应用程序且能保证导出时数据库的一致性状态。它只适用于多版本存储引擎，仅InnoDB。本选项和--lock-tables 选项是互斥的，因为LOCK  TABLES 会使任何挂起的事务隐含提交。要想导出大表的话，应结合使用--quick 选项。
+
+-l,--lock-tables 
+
+// 开始导出前，锁定所有表。用READ  LOCAL锁定表以允许MyISAM表并行插入。对于支持事务的表例如InnoDB和BDB，--single-transaction是一个更好的选择，因为它根本不需要锁定表。请注意当导出多个数据库时，--lock-tables分别为每个数据库锁定表。因此，该选项不能保证导出文件中的表在数据库之间的逻辑一致性。不同数据库表的导出状态可以完全不同。
+
+-x,--lock-all-tables // 提交请求锁定所有数据库中的所有表，以保证数据的一致性。这是一个全局读锁，并且自动关闭--single-transaction 和--lock-tables 选项。
+
+--mster-data=[1/2]
+
+-R,--routines //导出存储过程以及自定义函数。
+
+--triggers //导出触发器
+
+-E,--events //导出事件。
+
+--hex-blob //使用十六进制格式导出二进制字符串字段。如果有二进制数据就必须使用该选项。影响到的字段类型有BINARY、VARBINARY、BLOB。
+
+-T,--tab=path //为每个表在给定路径创建tab分割的文本文件。注意：仅仅用于mysqldump和mysqld服务器运行在相同机器上。
+
+-w,--where= '过滤条件'
+
+
+【备份数据库需要的权限】
+
+select , reload , lock tables, replication client, show view, process ,file
+
+
+【建立备份账号】
+
+create user 'backup'@'localhost' identified by '123456'; //建立备份用户
+
+grant select , reload , lock tables, replication client, show view, process ,file on *.* to 'backup'@'localhost'; //给备份用户授权
+
+【备份示例】
+
+mysqldump -ubackup -p --master-data=2 --single-transaction --routines --triggers --events 数据库名 > 备份名.sql;  //备份单库全部表
+
+mysqldump -ubackup -p --master-data=2 --single-transaction --routines --triggers --events 数据库名  表名> 备份名.sql; //备份单库某几个表
+
+mysqldump -ubackup -p --master-data=2 --single-transaction --routines --triggers --events --all-databases > 备份名.sql //备份一个mysql实例的全部数据库
+
+mysqldump -ubackup -p --master-data=2 --single-transaction --where "order_id>1000 and order_id<1050" 数据库名  表名> 备份名.sql; //按条件备份
+
+
+/////// 恢复mysqldump备份的数据库 ///////
+
+mysql -u -p dbname < backup.sql  恢复是单线程
+
+mysql> source /tmp/backup.sql;
+
+
+【通过备份数据库对生产数据库误操作的还原】
+
+insert into bak_test.user_sys (id,user_name,user_pwd,user_regtime)
+select a.* from test.user_sys a left join bak_test.user_sys b on a.id=b.id where b.id is null;
+
+【进行指定时间点的恢复】
+
+所谓恢复，就是让mysql将保存在binlog日志中指定段落区间的sql语句逐个重新执行一次
+
+先决条件
+
+具有指定时间点前的一个全备
+
+具有自上次全备后到指定时间点的所有二进制日志
+
+mysqlbinlog --base64-output=decode-rows -vv --start-position=84882 --database=mc_orderdb mysql-bin.000011 | grep -B DELETE | more
+
+--base64-output参数用来控制binlog部分是否显示出来的，指定为decode-rows表示不显示binglog部分
+
+-v参数是可能从binlog中重建sql语句，这对于误操作的恢复很我帮助。-vv增加了备注部分
+
+mysqlbinlog --start-position=84882 --stop-position=169348 --database=mc_orderdb mysql-bin.000011>mc_order_diff.sql
+
+mysql -uroot -p mc_orderdb < mc_order_diff.sql
+
+【实时二进制日志备份】
+
+GRANT REPLICATION SLAVE ON *.* TO 'repl'@'ip' identified by '1234'  建立备份用户
+
+mkdir -p binlog_backup 建立备份目录
+
+mysqlbinlog --raw --read-from-remote-server \
+--stop-never --host localhost --port 3306 \
+-u repl -p xxxxxx 二进制日志名
+
+
+////////// xtrabackup数据库备份工具 //////////
+
+【xtrabackup介绍】
+
+用于在线备份innodb存储引擎的表
+
+innobackupex是对xtrabackup的封装并提供Myisam表的备份功能
+
+
+【安装xtrabackup】
+
+http://www.percona.com/downloads/XtraBackup/LATEST/
+
+percona-xtrabackup-24-2.4.4-1.el6.x86_64.rpm
+
+yum install -y perl-DBD-MySQL.x86_64 perl-DBI.x86 perl-Time-HiRes.x86_64 perl-IO-Socket-SSL.noarch perl-TermReadKey.x86_64
+
+yum install numactl.x86_64 numactl-devel.x86_64
+
+rpm -ivh percona-xtrabackup-24-2.4.4-1.el6.x86_64.rpm
+
+【利用xtrabackup进行全备】
+
+innobackupex --user=root --password=pwd --parallel=2 /home/db_backup/  
+
+--parallel 使用的线程数；
+/home/db_backup/ 备份目录
+
+completed ok! 备份成功
+
+
+【利用xtrabackup进行全备的恢复】
+
+innobackupex --apply-log 数据库备份目录
+
+mv 备份目录 数据库目录

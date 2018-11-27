@@ -1,0 +1,18 @@
+【路由】
+
+
+ ////// 基本路由 //////
+
+ >> 路由位置：Http > routes.php
+
+ >> Route::match(['get','post'],'multy1',function(){
+        return 'multy1';
+    })
+
+ >> Route::any('multy2',function(){
+        return 'multy2';
+    });
+
+ >> Route::get('user/{id}',function($id){
+        return $id;
+    });

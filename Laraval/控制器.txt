@@ -1,0 +1,76 @@
+【控制器】
+
+
+ >> 位置：Http > Controllers
+
+ >> namespace App\Http\Controllers;
+
+ >> Route::get('member/info','MemberController@info');
+
+ >> Route::any('member/info',[
+    'uses'=>'MemberController@info',
+    'as'=>'memberinfo'
+    ]);
+
+ >> Route::any('member/{id}',['uses'=>'MemberController@info']);
+
+
+
+【Request】
+
+
+ >> public function request1(Request $request){} // 依赖注入
+
+ >> $request->method(); // 判断请求类型
+
+ >> $request->isMethod('GET'); // 是否get请求
+
+ >> $request->ajax(); // 是否ajax请求
+
+ >> $request->url(); // 当前url
+
+
+【Session】
+
+
+ >> 配置 config > session.php
+
+ >> $request->session()->put('key', 'value'); // 设置
+
+ >> $request->session()->get('key'); // 获取
+
+ >> $request->session()->forget('key'); // 删除
+
+ >> $request->session()->has('users'); // 判断是否存在
+
+
+【Response】
+
+
+ >> return response()->json($data); // 返回json数据
+
+ >> return redirect('url'); // 重定向
+
+ >> return redirect('url')->with('message','我是快闪');
+
+ >> return redirect()->back(); // 返回上一个页面
+
+
+【Middleware】
+
+ >> 新建中间件 Http > Middleware
+
+namespace App\Http\Middleware
+
+use Closure;
+
+class Activity{
+
+    public function handle($request,Closure $next)
+    {
+
+     }
+
+}
+
+ >> 注册中间件 Kerrnel.php

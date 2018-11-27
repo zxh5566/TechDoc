@@ -1,0 +1,31 @@
+【header头信息】
+
+ >> version 版本号
+
+ >> app_type 安卓 IOS
+
+ >> did   移动端设备号
+
+ >> model 机型
+
+【生成sign】
+
+ >> 按键值排序   ksort()
+
+ >> 拼接数据     http_build_query()
+
+ >> 通过aes加密  $aes->encrypt()
+
+ >> 转换大写     strtoupper()
+
+【验证sign】
+
+ >> 通过aes解密
+
+ >> 将字符串转成数组 parse_str()
+
+ >> 检验转换后的数据是否是数组，是否包含某些验证数据，并且比对验证数据
+
+ >> 验证是否超时
+
+ >> 验证唯一性

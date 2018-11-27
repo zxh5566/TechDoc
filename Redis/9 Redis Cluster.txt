@@ -1,0 +1,40 @@
+【Redis Cluster】
+
+ >> 多个Redis实例协同运行
+
+ >> 采用slot(槽)分割数据，是CRC16与16384取模后分散
+
+ >> 主从结构和选举算法，保证每个节点的可靠性
+
+ >> 客户端可以连接任意一个node进行操作
+
+ >> 不完全支持批量操作：MSET MGET
+
+ >> 事务不能跨节点支持
+
+ >> 不支持多实例
+
+ >> Key是最小粒度
+
+ >> 最少6台服务器才能组成完整高可用的集群
+
+
+ //////////// 集群配置 ////////////
+
+ >> 安装ruby，然后 gem install redis
+
+ >> vim redis.conf： 
+
+ >> bind 主机ip   
+
+ >> protected-mode no yes禁止公网访问
+
+ >> cluster-enabled yes
+
+ >> cluster-config-file nodes-6379.conf
+
+ >> cluster-node-timeout 15000 超时时间
+
+ >> 建立集群 ./redis-4.0.9/src/redis-trib.rb create --replicas 1 服务器ip1  ip2  ip2  ip4 ...  
+
+

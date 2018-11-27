@@ -1,0 +1,96 @@
+
+【第一步：通过yum命令安装svnserve】
+
+yum -y install subversion
+
+
+若需查看svn安装位置，可以用以下命令：
+
+rpm -ql subversion
+
+
+【第二步：创建版本库目录（此仅为目录，为后面创建版本库提供存放位置）】
+
+
+选择在var路径下创建版本库，当前处于根目录下，一次性创建如下：
+
+mkdir /var/svnrepos
+
+
+【第三步：创建svn版本库】
+
+在第二步建立的路径基础上，创建版本库，命令如下：
+
+svnadmin create /var/svnrepos/xxxx  
+ （xxxx为你预期的版本库名称，可自定义）
+
+创建成功后，进入xxxx目录下
+
+cd /var/svnrepos/xxxx
+
+
+【第四步：配置修改】
+
+进入已经创建好的版本库目录下，也就是前文说创建的xxxx，进入conf
+
+cd /var/svnrepos/xxxx/conf
+
+authz：负责账号权限的管理，控制账号是否读写权限
+
+passwd：负责账号和密码的用户名单管理
+
+svnserve.conf：svn服务器配置文件
+
+ >> 1.编辑 authz 文件
+
+[/]
+
+luo = rw
+
+[/]：表示根目录，即 /var/svnrepos
+
+luo = rw：表示用户luo对根目录具有读写权限。
+
+ >> 2.编辑 passwd 文件
+
+luo = 111111
+
+用户名为：luo，认证密码为：luo123456
+
+ >> 3.编辑 svnserve.conf 文件（注意：配置的前面不能有空格，一定要顶格写）
+
+anon-access = none：表示禁止匿名用户访问。
+
+auth-access = write：表示授权用户拥有读写权限。
+
+password-db = passswd：指定用户名口令文件，即 passwd 文件。
+
+authz-db = authz：指定权限配置文件，即 authz 文件。
+
+realm = /var/svnrepos：指定认证域，即 /var/svnrepos 目录。
+
+
+【第五步：防火墙开启（iptable防火墻）】
+
+firewall-cmd --zone=public --add-port=3690/tcp --permanent
+
+ （--permanent永久生效，没有此参数重启后失效）
+
+  重新载入
+
+  firewall-cmd --reload
+
+【六：启动svn服务器】
+
+svnserve -d -r /var/svnrepos
+
+启动成功后，可用ps -aux查看服务启动是否成功
+
+ps -ef | grep 'svnserve'
+
+
+【七：客户端访问svn服务器】
+
+在windows客户端，输入地址：svn://ip地址:3690/xxxx   （iP地址为你linux的ip，xxxx为前文创建的版本库名称,3690为svn默认端口）
+
+弹出输入用户名和密码，输入即可访问

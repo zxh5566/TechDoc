@@ -1,0 +1,110 @@
+
+【数据库操作之-- DB facade(原始操作)】
+
+ >> 连接数据库：config/database.php  .env
+
+ >> DB::select('select * from student');
+
+ >> DB::insert('insert into student(name,age) values(?,?)',['sean',18]);
+
+ >> DB::update('update student set age=? where name=?',[20,'sean']);
+
+ >> DB::delete('delete from student where id > ?',[1001]);
+
+【数据库操作之-- 查询构造器】
+
+ ////// 查询构造器简介 //////
+
+ >> 使用PDO参数绑定，以保护程序免于SQL注入，因此传入的参数不需要额外转义
+
+ >> 可以满足所有数据库操作，在所有数据库系统上都可以执行
+
+
+ ////// 新增数据 //////
+
+ >> DB::table('student')->insert(['name'=>'zxh','age'=>18]);
+
+ >> DB::table('student')->insertGetId(['name'=>'zxh','age'=>18]);
+
+ >> DB::table('student')->insert([
+    ['name'=>'zxh','age'=>18],
+    ['name'=>'zxh1','age'=>19],
+    ]);
+
+ ////// 更新数据 //////
+
+ >> DB::table('table')->where('id',12)->update(['name','zxh5566']);
+
+ >> DB::table('table')->where('id',12)->increment('age');
+
+ >> DB::table('table')->where('id',12)->decrement('age',3,['name'=>'ii']);
+
+ ////// 删除数据 //////
+
+ >> DB::table('table')->where('id',12)->delete();
+
+ ////// 查询数据 //////
+
+ >> DB::table('table')->get(); // 查询所有数据
+
+ >> DB::table('table')->orderBy('id','desc')->first(); // 返回一条记录
+
+ >> DB::table('table')->whereRaw('id>=? and age > ?',[1001,18])->get();
+
+ >> DB::table('table')->whereRaw('id>=? and age > ?',[1001,18])->pluck('name'); //返回字段
+
+ >> DB::table('table')->lists('name','id'); // 返回指定id为小标的name字段
+
+ >> DB::table('table')->select('id','name','age')->get(); // 返回指定字段类似tp的field
+
+ >> DB::table('table')->chunk(2,function($students){
+      if(条件){return false;}
+    }) // 每次查几条
+
+ ////// 聚合函数 //////
+
+ >> DB::table('table')->count();
+
+ >> DB::table('table')->max('age');
+
+ >> DB::table('table')->avg('age');
+
+ >> DB::table('table')->sum('age');
+
+
+【数据库操作之-- ORM操作】
+
+
+ >> 表名默认为模型的复数
+
+ >> 指定表名 protected $table = 'student'
+
+ >> Student::all() //查询所有记录
+
+ >> Student::find(id) //查询一条记录
+
+ >> Student::findOrFail(id); // 根据主键查找没找到抛出异常
+
+ >> $student = new Student(); $student->name='zxh'; $student->save();
+
+ >> create_at  update_at  $timestamps = true; 自动维护时间戳
+
+ >> protected function getDateFormat(){ return time() }
+
+ >> protected function asDateTime($val){ return $val;}
+
+ >> protected $fillable=['name','age']; // 指定允许批量赋值的字段
+
+ >> protected $guarded = [];指定不允许批量赋值的字段
+
+ >> Student::create(['name'=>'zxh','age'=>18]);
+
+ >> Student::firstOrCreate(['name'=>'zxh']); //没有数据则新增
+
+ >> Student::where('id',12)->update(['name'=>'zxh']); // 更新数据
+
+ >> Student::destroy([1020,1019]); // 通过主键删除,可删除多条
+
+ >> Student::where('id',12)->delete();
+
+

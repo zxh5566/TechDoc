@@ -1,0 +1,40 @@
+【修改系统运行级别】    
+
+	vim /etc/inittab  修改数字 id:3:initedefault:  
+
+【RPM包安装的服务】  
+
+	查看服务自启动状态  chkconfig --list
+
+【RPM包安装的服务默认位置】 
+
+	/etc/init.d/ 启动脚本位置
+
+	/etc/sysconfig/ 初始化配置文件位置
+
+	/etc/ 配置文件位置
+
+	/var/lib/ 服务产生的数据
+
+	/var/log/ 日志
+
+【RPM包安装的服务启动】
+
+	/etc/init.d/服务名称 start|restart|stop|status
+	
+	service 独立服务名 start|restart|stop|status
+
+【RPM包安装的服务自启动】
+
+	修改 /etc/rc.d/rc.local文件
+	
+	chkconfig --level 2345 服务名 on|off
+
+【源码包安装的服务】 
+
+	查看服务安装位置，一般是 /usr/local/下
+
+【源码包安装的服务启动】
+        
+	到服务安装的根目录启动，例如：apache的启动
+	/usr/local/apache2/bin/apachectl start

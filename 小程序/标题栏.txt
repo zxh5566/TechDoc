@@ -1,0 +1,9 @@
+内页标题栏
+
+{
+
+"navigationBarBackgroundColor":"#405f80",
+"navigationBarTitleText":"标题文字",
+"navigationBarTitleStyle":"red"
+
+}

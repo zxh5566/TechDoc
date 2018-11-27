@@ -1,0 +1,44 @@
+
+//插入数据
+
+create procedure inser_user(in t int)
+begin
+set @num = 1;
+while @num<10 do
+if t=1 then
+insert into user_sys(user_name,user_pwd) values(concat('user',@num),'123');
+else
+insert into user_sys2(user_name,user_pwd) values(concat('user',@num),'123');
+end if;
+set @num = @num+1;
+end while;
+end //
+
+
+//用户登录
+
+create procedure login(in _name varchar(20),in _pwd varchar(20))
+begin
+set @gid = 0;
+set @user_name = '';
+set @_result = 'login success';
+select id,user_name into @gid,@user_name from user_sys where user_name=_name and user_pwd=_pwd;
+if @gid=0 then
+set @_result = 'login error';
+end if;
+insert into user_log(user_id,log_type) values(@gid,@_result);
+select * from (select @_result as _result) a, (select @gid,@user_name) b; 
+end
+//
+
+//商品点击日志
+
+create procedure clicklog(in pro_id int,in _user_ip varchar(20),in _user_id int)
+begin
+set @num = 0;
+select * from prod_main where prod_id=pro_id limit 1;
+set @num = found_rows();
+if @num = 1 then
+insert into prod_clicklog(prod_id,user_ip,user_id) values(pro_id,_user_ip,_user_id);
+end if;
+end

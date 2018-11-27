@@ -1,0 +1,17 @@
+
+【TP5使用restfull api方式】
+
+ 
+ >> Route::get   Route::post   Route::put   Route::delete    Route::resource
+
+
+【配置】
+
+ return [
+    'default_return_type' => 'json',
+ ];
+
+
+【路由】
+
+ >> application > route.php

@@ -1,0 +1,6 @@
+
+wx.navigateTo
+
+wx.redirectTo只能用在非tabBar页面的跳转
+
+要跳转到tabBar页面，需要使用wx.switchTab

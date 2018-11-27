@@ -1,0 +1,131 @@
+【工作原理和内存管理】
+
+slab Allocation内存管理机制
+
+优先删除最近最少使用的内存，删除之
+
+
+【windows下安装memcached及php_memcached扩展】
+
+1、下载memcache及安装（用管理员身份安装）
+
+32位系统 1.4.4版本：http://static.runoob.com/download/memcached-win32-1.4.4-14.zip
+64位系统 1.4.4版本：http://static.runoob.com/download/memcached-win64-1.4.4-14.zip
+
+解压，安装：管理员身份运行cmd  切换到解压目录：/memcached.exe -d install
+
+2、下载php_memcache扩展
+
+http://pecl.php.net/package/memcache/3.0.8/windows 或 http://windows.php.net/downloads/pecl/releases/memcache/3.0.8/
+
+php7的memcached扩展 git下载地址：https://github.com/nono303/PHP7-memcache-dll
+
+注：ts是指线程安全、nts是指线程不安全，可以在phpinfo中的查找 Thread Safety项，若是enabled则为线程安全
+
+phpinfo中 Compiler MSVC14 (Visual C++ 2015)  选择 VC14 还是 VC15
+
+3、把php_memcached.dll扔进 php安装路径下的ext文件夹
+
+4、修改php.ini  添加 extension=php_memcache.dll
+
+5、重启服务器
+
+
+
+【linux安装Memcached和php扩展】
+
+
+
+【memcache基本使用】
+
+////// Memcache 类 //////
+
+$memcache = new Memcache;
+$memcache->connect('127.0.0.1', 11211);
+$memcache->pconnec('127.0.0.1', 11211); // 打开一个到服务器的持久化连接 , 连接不会在脚本执行结束后或者close()被调用后关闭
+
+$memcache->addServer('123.57.210.55', 11211,$persistent,$weight); 
+// 向连接池中添加一个memcache服务器 $persistent 是否持久化连接 $weight 
+控制桶的数量提升被选中的权重 $timeout 表示连续持续时间
+
+$memcache->set('name', 'TK'); 
+// 默认存储不压缩 不过期 , 其中字符串和数值直接存储，其他类型序列化后存储 set其实是add方法和replace方法集合
+
+$memcache->set('email', 'julylovin@163.com',MEMCACHE_COMPRESSED,5);
+// MEMCACHE_COMPRESSED设置存储是否压缩 , 5表示5秒后过期但是最大只能设置2592000秒(30天)
+如果设置为0 表示永不过期, 可以设置将来的时间戳
+
+$memcache->set('info',array('age'=>'26','salary'=>'1000')); 
+// 可以直接存储数组,redis中存储需要手动serialize()序列化
+
+$memcache->add('counter', '10', MEMCACHE_COMPRESSED, 0); 
+//如果键值存在会返回false , 如果不存在, 和set方法一样，生成一个counter的key并赋值10
+
+$memcache->replace ('counter', '10');
+//如果键值不存在会返回false , 如果存在, 替换counter的值为10
+
+$memcache->increment('counter', 3); 
+// 首先将元素当前值转换成数值然后减去value 操作counter键值+3 
+若键不存在 则返回false 不能用于压缩的键值操作，否则get键会失败
+
+$memcache->decrement('counter', 3); // 操作counter键值-3 , 若键不存在 则返回false
+
+$memcache->delete('counter', 3); // 操作删除键counter ， 3表示3秒内删除，默认是0即立即删除
+
+$memcache->flush(); //flush()立即使所有已经存在的元素失效
+
+$memcache->getExtendedStats (); 
+// 返回一个二维关联数据的服务器统计信息。数组的key由host:port方式组成
+
+$memcache->getServerStatus ('127.0.0.1'); // 获取返回一个服务器的在线/离线状态 0表示离线 非0在线
+
+$memcache->getStats(); // 获取服务器统计信息
+
+$memcache->getVersion(); // 返回服务器版本信息
+
+$memcache->setCompressThreshold ($threshold, $min_saving); 
+// 开启大值自动压缩 $threshold设置压缩阀值 2000字节 ，即字节数大于2K 就压缩
+
+$min_saving 0--1之间 0.2表示压缩20%
+
+$memcache->setServerParams('memcache_host', 11211, 1, 15, true, '_callback_memcache_failure'); 
+
+// $memcache->addServer('memcache_host', 11211, false, 1, 1, -1, false);
+已经通过addServer 配置过服务器 使用setServerParams 重新设置配置信息
+
+
+
+【分布式算法】
+
+1、余数计算：根据key来计算CRC，然后结果对服务器数进行取模得到memcached服务器节点。服务器无法连接的时候，将尝试的连接次数加到key后面重新计算 //参看php的crc32()函数
+
+缺点：添加或移除服务器，几乎所有缓存要重建，还考虑雪崩式崩溃问题。
+
+2、一致性哈希：求出服务器节点的哈希值分配到0-2的32次方的圆上；求出存储数据键的哈希值映射到圆上，从数据映射到的位置开始顺时针查找，将数据保存到找到的第一个服务器
+
+特点：冗余少，负载均衡，过度平滑，存储均衡
+
+
+【Session共享】
+
+Session存放在共用的Memcached中，实现多服务器共享
+
+修改php.ini 
+
+session_save_handler = "memcached"
+
+session.save_path = "memcached服务器ip:11211"
+
+或者在具体php文件中
+
+ini_set("session_save_handler","memcached");
+ini_set("session.save_path","memcached服务器ip:11211");//php7的写法，php5写法 tcp://memcached服务器ip:11211
+
+
+【memcache和memcached有什么区别】
+
+php扩展名不同
+
+memcache基于pecl扩展库版本
+
+memcached基于libmemcached版本（优先选择）

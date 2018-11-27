@@ -1,0 +1,42 @@
+
+【iconv】
+ 
+ >> iconv — 字符串按要求的字符编码来转换 
+
+ >> iconv碰到一些生僻字就会无法转换，配置第二个参数//IGNORE
+
+ >> iconv(“UTF-8″,”GB2312//IGNORE”,$data) ; 
+
+ >> 这样碰到生僻字转换失败时，它就会忽略失败，继续转换下面的内容
+
+ >> 返回值 : 返回转换后的字符串， 或者在失败时返回 FALSE。
+
+
+【mb_convert_encoding】
+
+ >> 第一个参数：要处理的字符串
+
+ >> 第二个参数：目标编码
+
+ >> 第三个参数：内容原编码，它可以是一个 array 也可以是逗号分隔的枚举列表
+
+ >> GBK转UTF-8
+
+ >> $outstr = mb_convert_encoding($instr,'UTF-8','GBK',);
+
+ >> $str = mb_convert_encoding($instr, "UCS-2LE", "JIS, eucjp-win, sjis-win");
+
+
+【mb_detect_encoding】
+
+ >> $encode = mb_detect_encoding($keytitle, array('ASCII','GB2312','GBK','UTF-8','BIG5')); 
+
+ >> 检测字符的编码
+
+ >> 第一个参数：待检查的字符串。
+
+ >> 第二个参数：是一个字符编码列表。 编码顺序可以由数组或者逗号分隔的列表字符串指定。
+
+ >> 第三个参数： strict 指定了是否严格地检测编码。 默认是 FALSE。
+ 
+ >> 返回值 检测到的字符编码，或者无法检测指定字符串的编码时返回 FALSE。

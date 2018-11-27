@@ -1,0 +1,29 @@
+【文件上传】
+
+
+ ////// 配置 //////
+
+ >> config/filesystems.php
+
+ >> 'uploads'=>[
+
+     'driver' => 'local',
+
+     'root' => public_path('uploads')
+
+     ]
+
+ ////// 上传 //////
+
+
+ >> $originalName = $file->getClientOriginalName(); // 源文件名
+
+ >> $ext = $file->getClientOriginalExtension(); // 扩展名
+
+ >> $type = $file->getClientMimeType(); // MimeType
+
+ >> $realPath = $file->getRealPath(); // 临时绝对路径
+
+ >> $filename = date('YmdHis') . '-' . uniqid() . '.' .$ext;
+
+ >> Storage::disk('uploads')->put($filename,file_get_contents($realPath));

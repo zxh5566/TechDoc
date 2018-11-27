@@ -1,0 +1,11 @@
+wx.setStorageSync(KEY,DATA)
+将数据存储在本地缓存
+
+wx.getStorageInfoSync 
+同步获取当前storage的相关信息
+
+wx.removeStorage(OBJECT) 
+从本地缓存中异步移除指定 key 
+
+wx.clearStorageSync() 
+同步清理本地数据缓存

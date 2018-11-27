@@ -1,0 +1,79 @@
+【get与post的区别】
+
+
+ >> GET在浏览器回退时是无害的，而POST会再次提交请求。
+
+ >> GET产生的URL地址可以被Bookmark，而POST不可以。
+
+ >> GET请求会被浏览器主动cache，而POST不会，除非手动设置。
+
+ >> GET请求只能进行url编码，而POST支持多种编码方式。
+
+ >> GET请求参数会被完整保留在浏览器历史记录里，而POST中的参数不会被保留。
+
+ >> GET请求在URL中传送的参数是有长度限制的，而POST没有。
+
+ >> 对参数的数据类型，GET只接受ASCII字符，而POST没有限制。
+
+ >> GET比POST更不安全，因为参数直接暴露在URL上，所以不能用来传递敏感信息。
+
+ >> GET参数通过URL传递，POST放在Request body中。
+
+ >> GET产生一个TCP数据包，POST产生两个TCP数据包。
+
+ GET方式的请求，浏览器会把http header和data一并发送出去，服务器响应200（返回数据）；
+
+ POST，浏览器先发送header，服务器响应100 continue，浏览器再发送data，服务器响应200 ok（返回数据）
+
+
+【Memcache 和 Redis区别】
+
+ >> Memcache存储数据的类型都是String字符串类型，Redis数据类型比较丰富
+
+ >> Memcache是缓存，Redis可以作为数据库使用
+
+ >> Memcache服务器断电，数据丢失，Redis有持久化功能，可以把数据随时存储在磁盘
+
+
+【php代码解释过程】
+
+ >> Scanning(Lexing) ,将PHP代码转换为语言片段(Tokens)
+
+ >> Parsing, 将Tokens转换成简单而有意义的表达式
+
+ >> Compilation, 将表达式编译成Opcodes
+
+ >> Execution, 顺次执行Opcodes，每次一条，从而实现PHP脚本的功能。
+
+
+【如何共享session】
+
+
+
+【git分支管理策略】
+ 
+ >> git 会用吗 如何从远程拉一个分支下来
+
+
+【restful设计】
+
+
+【composer】
+
+
+【PHP7新特性】
+
+ >> 运算符（NULL 合并运算符）
+
+ >> 函数返回值类型声明
+
+ >> 标量类型声明
+
+ >> use 批量声明
+
+ >> define 可以定义常量数组
+
+ >> 闭包（ Closure）增加了一个 call 方法
+
+
+【xss攻击、csrf攻击、sql注入】

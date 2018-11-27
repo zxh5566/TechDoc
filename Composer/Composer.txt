@@ -1,0 +1,25 @@
+【Composer】
+
+ >> 包管理器是PHP的一个依赖管理器，涉及packages和libraries
+
+ >> 在项目中声明所依赖的外部工具库，Composer会自动安装这些工具库及依赖文件
+
+
+ ////// 安装方式 //////
+
+ >> 下载 https://getcomposer.org/download/
+
+ >> composer.phar  通用安装方式
+
+ >> 全局配置：将composer.phar文件复制到php.exe文件同级目录下
+
+ >> 创建composer.bat文件 将 @php "%~dp0composer.phar" %*  放到composer文件中
+
+ >> 设置中国全量镜像 
+   
+    composer config -g repo.packagist composer https://packagist.phpcomposer.com 
+
+
+
+
+

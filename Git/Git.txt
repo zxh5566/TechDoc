@@ -1,0 +1,189 @@
+【仓库，英文名repository】
+
+什么是版本库呢？版本库又名仓库，英文名repository，你可以简单理解成一个目录，这个目录里面的所有文件都可以被Git管理起来，每个文件的修改、删除，Git都能跟踪，以便任何时刻都可以追踪历史，或者在将来某个时刻可以“还原”。
+
+
+【工作区和暂存区】
+
+ >> 工作区:电脑里的项目
+
+ >> 版本库（Repository）:工作区有一个隐藏目录.git，这个不算工作区，而是Git的版本库
+
+ >> Git的版本库里存了很多东西，其中最重要的就是称为stage（或者叫index）的暂存区
+
+ >> 还有Git为我们自动创建的第一个分支master，以及指向master的一个指针叫HEAD
+
+ >> 用git add把文件添加进去，实际上就是把文件修改添加到暂存区；
+
+ >> 用git commit提交更改，实际上就是把暂存区的所有内容提交到当前分支。
+
+
+【删除github中的项目】
+
+ >> 选择要删除的项目，选择Settings >> Dabger Zone >> Delete this repository
+
+
+【配置用户名和邮箱】
+
+ >> $ git config --global user.name "zxh5566"
+
+ >> $ git config --global user.email "1045746362@qq.com"
+
+
+【查看用户名和邮箱】
+
+ >> $ git config user.name
+
+ >> $ git config user.email
+
+
+【创建版本库】
+
+ >> $ git init
+
+
+【提交版本库】
+
+ >> $ git add .
+
+ >> $ git commit -m "注释"
+
+ 【https和ssh】
+
+ >> https只复制url就可以操作；但是一旦发生删除、上传等命令，每次都要输入账号
+
+ >> 传输密码加密，SSH连接git为首选
+
+
+【切换SSH方式】
+
+ >> ssh-keygen -t rsa -C "1045746362@qq.com"
+
+ >> 生成秘钥，它会告诉你秘钥的位置
+
+ >> 来到id_rsa.pub(公钥) 复制内容进入github
+
+ >> 用户中心 >> settings >> SSH and GPG keys >> New SSH key
+ 
+
+【查看远程库】
+
+ >> $ git remote -v
+
+【删除远程库】
+
+ >> $ git remote remove [remote_name]
+
+【添加远程库】
+
+ >> $ git remote add [remote_name] [SSH URL or HTTP URL］
+
+ >> remote代表要操作远程库
+
+ >> add代表在本地仓库添加一个从github上获取的远程库
+
+ >> 并取名称为:origin(可以任意名称)
+
+【推送到远程仓库】
+
+ >> $ git push -u(第一次推送加上参数-u) [remote_name] master
+
+
+【查看分支】
+
+ >> $ git branch
+
+【创建分支】
+
+ >> $ git branch [分支名称]
+
+【选择分支】
+
+ >> $ git checkout [分支名称]
+
+ >> 创建+切换分支：git checkout -b <name>
+
+【删除分支】
+
+ >> 删除本地分支：git branch -d [分支名称]
+
+ >> 删除远程分支：git push [项目名称] :[分支名称]
+
+ >> 如果要丢弃一个没有被合并过的分支，可以通过git branch -D <name>强行删除
+
+【合并分支】
+
+ >> $ git merge dev 将dev分支合并到当前分支
+
+ >> 强制禁用Fast forward模式，Git会在merge时生成一个新的commit，从分支历史可以看出分支信息
+
+ >> $ git merge --no-ff -m "merge with no-ff" dev
+
+【比对本地和远程项目】
+
+ >> $ git fetch 项目名称 分支   从远程master分支获取更新
+
+ >> $ git diff master abc/master 比对本地库与远程库的区别
+
+ >> $ git merge abc/master 合并
+
+ >> $ git checkout --ours 文件名  代表使用我们的版本
+
+ >> $ git checkout --theirs 文件名 代表使用远程的版本
+
+ >> 最后需要重新 add和commit一下，最后push到远程
+
+
+【clone远程项目】
+
+ >> $ git clone -b 分支名（不写就是主分支）[SSH url]
+
+
+【版本回退】
+
+ >> HEAD指向的版本就是当前版本，使用命令git reset --hard commit_id 在各版本穿梭
+
+ >> 穿梭前，用git log可以查看提交历史，以便确定要回退到哪个版本。
+
+ >> 要重返未来，用git reflog查看命令历史，以便确定要回到未来的哪个版本。
+
+
+【撤销修改】
+
+ >> 场景1：当你改乱了工作区某个文件，想直接丢弃工作区的修改，用git checkout -- file。
+
+ >> 场景2：当你不但改乱了工作区某个文件的内容，还添加到了暂存区时，想丢弃修改，分两步，第一步用命令git reset HEAD <file>，就回到了场景1，第二步按场景1操作。
+
+ >> 场景3：已经提交修改到版本库，想要撤销本次提交，参考版本回退，前提是没有推送到远程库。
+
+
+【删除文件】
+
+ >> 一种情况是删错了，切换到相应目录，执行$ git checkout -- test.txt恢复
+
+ >> 一是确实要从版本库中删除该文件，那就用命令git rm删掉，并且git commit
+
+
+【多人协作】
+
+ >> 在本地创建和远程分支对应的分支，使用git checkout -b branch-name origin/branch-name
+
+ >> 可以试图用git push origin <branch-name>推送自己的修改；
+
+ >> 如果推送失败，则因为远程分支比你的本地更新，需要先用git pull试图合并；
+
+ >> 如果合并有冲突，则解决冲突，并在本地提交；
+
+ >> 没有冲突或者解决掉冲突后，再用git push origin <branch-name>推送就能成功！
+
+ >> 如果git pull提示no tracking information，则说明本地分支和远程分支的链接关系没有创建，用命令git branch --set-upstream-to <branch-name> origin/<branch-name>。
+
+
+【Linux安装Git】
+
+ >> 官网 http://git-scm.com/download
+
+
+【创建裸仓库】
+
+ >> git init --bare server.git
