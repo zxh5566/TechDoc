@@ -1,0 +1,196 @@
+【主从复制原理】
+
+主库将变更写入到主库的binlog中
+
+从库的IO进程读取主库binlog内容，放进自己的relay log中；
+
+1、二进制日志点
+
+2、GTID(Mysql>=5.7推荐使用)
+
+从库的SQL进程执行relay log中的语句；
+
+
+
+【基于日志点的主从配置步骤】
+
+ >> 配置主从数据库服务器参数
+
+ >> 在Master服务器上创建用于复制的数据库账号
+
+ >> 备份Master服务器上的数据并初始化Slave服务器数据
+
+
+### Master服务器配置 ###
+
+ >> log_bin = /data/mysql/slq_logt/mysql.bin
+
+ >> server_id = 100
+
+
+
+### Slave服务器配置 ###
+
+log_bin = /data/mysql/slq_logt/mysql.bin
+
+server_id = 101
+
+relay_log =  /data/mysql/slq_logt/relay.bin
+
+read_only = on  super_read_only = on(mysql>=5.7) [可选]
+
+skip_slave_start = on   
+
+master_info_repository = TABLE
+
+relay_log_info_repository = TABLE
+
+log_slave_update = on [可选]
+
+
+### 在MASTER服务器上建立复制账号 ###
+
+ >> 用于IO进程连接Master服务器获取binlog日志
+
+ >> create user 'repl'@'ip段' identified by 'PassWord'; //建立复制账号
+
+ >> grant REPLICATION SLAVE on *.* to 'repl'@'ip段'; //需要REPLICATION SLAVE权限
+
+
+### 初始化Slave数据 ###
+
+ >> 建议主从数据库服务器采用相同的Mysql版本
+
+ >> 建议使用全库备份的方式初始化Slave数据
+
+
+### 启用复制链路 ###
+
+change master to 
+   master_host = 'master_host_id',          主库IP地址
+   master_user = 'repl',                    主库复制用户名
+   master_password = 'password',            主库复制用户密码
+   master_log_file = 'mysql_log_file_name', 主库二进制日志的文件名
+   master_log_pos = xxxxx;                  主库二进制日志的偏移量
+
+start slave;
+
+
+### 基于日志点的复制的优缺点 ###
+
+ >> 优点：mysql最早支持的复制,bug少，对sql查询没有限制，故障处理比较容易
+
+ >> 缺点：故障转移时重新获取新主的日志点信息比较困难
+
+
+【启动基于GTID的复制链路】
+
+GTID:即全局事务ID，其保证为每一个在主上提交的事务在复制集群中可以生成一个唯一ID
+
+
+### 配置主数据库服务器 ###
+
+bin_log = /usr/local/mysql/log/mysql-bin
+
+server_id = 100
+
+gtid_mode = on
+
+enforce-gtid-consistency
+
+log-slave-updates = on
+
+
+### 配置从数据库服务器 ###
+
+bin_log = /usr/local/mysql/log/mysql-bin
+
+server_id = 101
+
+gtid_mode = on
+
+enforce-gtid-consistency
+
+log-slave-updates = on
+
+read_only = on
+
+master_info_repository = TABLE
+
+relay_log_info_repository = TABLE
+
+
+### 启用复制链路 ###
+
+change master to 
+   master_host = 'master_host_id',
+   master_user = 'repl',
+   master_password = 'password',
+   master_auto_position = 1
+
+start slave;
+
+### GTID复制的限制 ###
+
+ >> 无法再使用Create table ...select建立表
+
+ >> 无法在事务中使用create temporary table建立临时表
+
+ >> 无法使用关联更新同时更新事务表和非事务表
+
+
+
+ >> 优点：可以方便的进行故障转移，从库不会丢失主库的任何修改
+
+ >> 缺点：故障处理比较复杂，对执行的SQL有一定的限制
+
+
+【选择复制模式】
+
+ >> 所使用的MySQL版本
+
+ >> 复制架构及主从切换的方式
+ 
+ >> 所使用的高可用管理组件
+
+ >> 对应用的支持程度
+
+ 
+
+【MySQL复制拓扑】
+
+### 一主多从的复制拓扑 ###
+
+优点：配置简单，可用多个从库分担读负载
+
+用途：为不同业务使用不同从库；将一台从库放到远程IDC，用做灾备恢复；分担主库读负载
+ 
+
+### 主主复制拓扑 ###
+
+
+【主主复制配置调整】
+
+Mater数据库配置修改
+
+auto_increment_increment = 2
+
+auto_increment_offset = 1
+
+1,3,5,7,9......
+
+主备数据库配置修改
+
+auto_increment_increment = 2
+
+auto_increment_offset = 2
+
+2,4,6,8,10.....
+
+【keepalived简介】
+
+Keepalived基于ARRP网络协议
+
+yum install keepalived -y
+
+/etc/keepalived/keepalived.conf
