@@ -1,0 +1,9 @@
+把日期转换为时间戳   UNIX_TIMESTAMP
+
+格式化MYSQL时间戳    FROM_UNIXTIME(unix_timestamp,format)
+
+
+例子：
+
+SELECT FROM_UNIXTIME(1234567890, '%Y-%m-%d %H:%i:%S')
+SELECT *,FROM_UNIXTIME(created, '%Y-%m-%d') as riqi FROM `rc_ms_users`

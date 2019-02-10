@@ -1,0 +1,23 @@
+   
+【在项目库的 hooks/ 目录下新建 post-commit 文件】 【钩子脚本】 
+
+添加脚本内容如下：
+
+#!/bin/sh 
+export LANG=zh_CN.UTF-8           #设置本地化编码
+WEB=/usr/local/nginx/html/ytkjiot #要更新的目录 
+/usr/bin/svn update $WEB 
+
+
+【让post-commit有执行的权限 chmod 777 post-commit 】
+
+【这里就已经完成了】
+ 
+说明: 
+#!/bin/sh 说明是执行shell命令 
+export LANG=zh_CN.GBK 是为了解决svn post commit 中文乱码，设置本地化编码,如果不设置将会出现错误,而执行不成功,错误标识为svn: Can't convert string from native encoding to 'UTF-8' 
+
+/usr/bin/svn update --username lxy --password 123456 /var/www/myproject 执行更新操作 
+
+如果提示:post-commit hook failed (exit code 255) with no output赋予post-commit文件可执行权限
+ 

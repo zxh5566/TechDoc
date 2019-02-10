@@ -1,0 +1,6 @@
+【安装jdk8】
+
+ yum install java-1.8.0-openjdk* -y
+
+
+【保留ik插件，删除其他插件】
