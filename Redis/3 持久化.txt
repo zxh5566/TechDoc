@@ -5,11 +5,16 @@
 
  //////////// RDB配置 //////////// 
 
- >> save 900 1; save 300 10; save 60 10000
 
- >> dbfilename dump.rdb
+ >> save 900 1;          # 900秒内如果超过1个key被修改，发起快照保存
 
- >> dir /var/lib/redis
+    save 300 10;         # 300秒超过10个key被修改，发起快照 
+
+    save 60 10000        # 60秒超过10000个key被修改，发起快照
+
+ >> dbfilename dump.rdb  # 默认备份文件名，可以自己修改
+
+ >> dir /var/lib/redis   # rdb文件保存位置
 
 
 
@@ -48,19 +53,24 @@
 
  //////////// AOF配置 //////////// 
 
- >> appendonly yes
+ >> appendonly yes                           # 开启AOF持久化
 
- >> appendfilename "appendonly.aof"
+ >> appendfilename "appendonly.aof"          # AOF持久化保存的文件名
 
- >> dir /var/lib/redis
+ >> dir /var/lib/redis                       # AOF持久化文件的存储地址
 
- >> appendfsync everysec / always / no
 
- >> no-appendfsync-on-rewrite yes
+ >> appendfsync everysec                     # 每秒强制写入磁盘一次（推荐）
 
- >> auto-aof-rewrite-percentage 100
+                always                       # 每次收到写命令就强制写入磁盘，最慢（不推荐）   
+                no                           # 完全依赖os，性能最好，持久化没保证
 
- >> auto-aof-rewrite-min-size 64mb
+
+ >> no-appendfsync-on-rewrite yes            # 正在导出RDB快照的过程中，要不要停止同步AOF
+
+ >> auto-aof-rewrite-percentage 100          # AOF文件大小比上次重写时的大小增长率100%时，重写
+
+ >> auto-aof-rewrite-min-size 64mb           # AOF文件至少超过64M，重写
 
 
  //////////// AOF重写 //////////// 

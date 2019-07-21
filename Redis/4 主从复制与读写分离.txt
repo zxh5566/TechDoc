@@ -6,8 +6,25 @@
 
  >> 取消复制：redis-6380 > slaveof no one
 
+
  //////// 配置实现 ////////
 
- >> slaveof ip port 
 
- >> slave-read-only yes
+ >> 主服务器配置
+
+
+ (1) bind 127.0.0.1 改为 #bind 127.0.0.1
+
+ (2) protected-mode yes 改为 protected-mode no
+
+
+ >> 从服务器配置
+
+ (1) slaveof  主服务器ip  端口号port  
+
+ (2) slave-read-only yes   从服务器模式为只读
+
+ (3) masterauth 配置连接主服务器密码，如果主服务器通过requirepass选项设置了密码
+
+
+ >> info replication  查看主从配置情况
